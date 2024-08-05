@@ -99,5 +99,4 @@ data class Users (
     @SerializedName("userAgent"  ) var userAgent  : String?  = null,
     @SerializedName("crypto"     ) var crypto     : Crypto?  = Crypto(),
     @SerializedName("role"       ) var role       : String?  = null
-
 )
