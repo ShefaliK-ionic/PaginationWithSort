@@ -39,5 +39,5 @@ class UsersAdapter(var myList:ArrayList<Users>) : RecyclerView.Adapter<UsersAdap
 
 
     inner class MyViewHolder(val usersItemBinding:UsersItemBinding):
-    RecyclerView.ViewHolder(usersItemBinding.root)
+    ViewHolder(usersItemBinding.root)
 }
