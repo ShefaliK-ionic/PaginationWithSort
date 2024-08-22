@@ -11,10 +11,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.RecyclerView.LayoutManager
-import androidx.recyclerview.widget.RecyclerView.OnScrollListener
 import com.google.gson.Gson
-import com.pagertask.R
 import com.pagertask.databinding.ActivityMainBinding
 import com.pagertask.model.Users
 import com.pagertask.utils.SortBy
@@ -30,8 +27,9 @@ class MainActivity : AppCompatActivity(),
 lateinit var layouManager:LinearLayoutManager
 lateinit var adapter: UsersAdapter
 var myList=ArrayList<Users>()
+var filteredList=ArrayList<Users>()
     var total=0
-    var list= arrayListOf(SortBy.NONE, SortBy.GENDER,SortBy.NAME)
+    var spinnerList= arrayListOf(SortBy.NONE, SortBy.GENDER,SortBy.NAME)
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -45,12 +43,12 @@ var myList=ArrayList<Users>()
         scrollDataLoadMore()
 //https://dummyjson.com/users?limit=5&skip=10
     }
-
+   lateinit var ad:ArrayAdapter<SortBy>
     private fun setupSpinnerAdapter() {
-        var ad =  ArrayAdapter(
+       ad =  ArrayAdapter(
                 this,
         android.R.layout.simple_spinner_item,
-        list);
+        spinnerList);
 
         // set simple layout resource file
         // for each item of spinner
@@ -91,7 +89,7 @@ var myList=ArrayList<Users>()
     private fun setupAdapter() {
         layouManager=LinearLayoutManager(this)
         binding.rvUsers.layoutManager=layouManager
-        adapter= UsersAdapter(myList)
+        adapter= UsersAdapter(filteredList)
         binding.rvUsers.adapter=adapter
     }
 
@@ -99,44 +97,62 @@ var myList=ArrayList<Users>()
 
         viewmodel.mutableLiveData.observe(this, Observer {
             Log.d("222","~~mutableLiveData~~~"+Gson().toJson(it))
+            Log.d("222","~~adapterSelectedposiation~~~"+binding.spinner.selectedItem.toString())
          myList.addAll(it.users)
+           filterData(binding.spinner.selectedItem.toString())
+
+
             it.total?.let {
                 total=it
             }
+
             adapter.notifyDataSetChanged()
+        })
+
+        viewmodel.errorLiveData.observe(this, Observer {
+            Log.d("222","~~errorLiveData~~~"+it)
         })
 
     }
 
     override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-        Log.d("222","~~~~~pos~~~"+list.get(p2))
-        if(list.get(p2).toString().contentEquals("Gender",true))
-            filterData(list.get(p2))
+        Log.d("222","~~~~~pos~~~"+spinnerList.get(p2))
+        if(spinnerList.get(p2).toString().contentEquals("Gender",true))
+            filterData(spinnerList.get(p2).toString())
     }
 
-    private fun filterData(get: SortBy) {
+    private fun filterData(get: String) {
         Log.d("222","~~get~~"+get)
-        var myList_=ArrayList<Users>()
-        for( i in 0.. myList.size-1){
-            if(get.toString().contentEquals ("Gender",true)){
-                if(myList.get(i).gender.toString().equals("female"))
-                    myList_.add(myList.get(i))
+//        var myList_=ArrayList<Users>()
+        filteredList.clear()
+        if(get.toString().contentEquals ("None",true)) {
+            filteredList.addAll(myList)
+
+        }else if(get.toString().contentEquals ("Gender",true)){
+
+        for( i in 0.. myList.size-1) {
+
+            if (myList.get(i).gender.toString().equals("female"))
+                filteredList.add(myList.get(i))
+        } }else if(get.toString().contentEquals ("Name",true)) {
+
+
+            for( i in 0.. myList.size-1) {
+
+                if (myList.get(i).username.toString().equals("female"))
+                    filteredList.add(myList.get(i))
             }
-
-
-        viewmodel.errorLiveData.observe(this, Observer {
-              Log.d("222","~~errorLiveData~~~"+it)
-        })
 
 
         }
 
-        adapter= UsersAdapter(myList_)
-        binding.rvUsers.adapter=adapter
-adapter.notifyDataSetChanged()
-        Log.d("222","~~myList_~~"+myList_.size)
 
-    }
+//        adapter= UsersAdapter(filteredList)
+//        binding.rvUsers.adapter=adapter
+        adapter.notifyDataSetChanged()
+        Log.d("222","~~myList_~~"+filteredList.size)
+
+}
 
     override fun onNothingSelected(p0: AdapterView<*>?) {
 

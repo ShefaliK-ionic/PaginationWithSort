@@ -32,7 +32,7 @@ class UserViewmodel @Inject constructor(private val usersRepository: UsersReposi
          data.put("page",page)
          data.put("limit",limit)
          data.put("skip",skip)
-        usersRepository.getUsers(queryMap =data, apiListener = object :ApiListener{
+         usersRepository.getUsers(queryMap =data, apiListener = object :ApiListener{
             override fun onSuccess(obj: Object) {
                 mutableLiveData.postValue(obj as UsersResponse)
             }
