@@ -17,6 +17,8 @@ import com.pagertask.model.Users
 import com.pagertask.utils.SortBy
 import com.pagertask.viewmodel.UserViewmodel
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.Collections
+
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(),
@@ -26,10 +28,9 @@ class MainActivity : AppCompatActivity(),
     lateinit var binding: ActivityMainBinding
 lateinit var layouManager:LinearLayoutManager
 lateinit var adapter: UsersAdapter
-var myList=ArrayList<Users>()
+
 var filteredList=ArrayList<Users>()
     var total=0
-    var spinnerList= arrayListOf(SortBy.NONE, SortBy.GENDER,SortBy.NAME)
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -48,7 +49,7 @@ var filteredList=ArrayList<Users>()
        ad =  ArrayAdapter(
                 this,
         android.R.layout.simple_spinner_item,
-        spinnerList);
+           viewmodel.spinnerList);
 
         // set simple layout resource file
         // for each item of spinner
@@ -76,7 +77,7 @@ var filteredList=ArrayList<Users>()
 
                 if(!binding.rvUsers.canScrollVertically(1)/*layouManager.findLastVisibleItemPosition() == myList.size-1*/){
                     Log.d("222","~page~8~"+viewmodel.page)
-                    if(total > myList.size){
+                    if(total > viewmodel.myList.size){
                         viewmodel.callApi()
                     }else{
                         Toast.makeText(this@MainActivity,"Reached last",Toast.LENGTH_SHORT).show()
@@ -98,15 +99,20 @@ var filteredList=ArrayList<Users>()
         viewmodel.mutableLiveData.observe(this, Observer {
             Log.d("222","~~mutableLiveData~~~"+Gson().toJson(it))
             Log.d("222","~~adapterSelectedposiation~~~"+binding.spinner.selectedItem.toString())
-         myList.addAll(it.users)
-           filterData(binding.spinner.selectedItem.toString())
-
 
             it.total?.let {
                 total=it
             }
+        if(it.users.size>0 && viewmodel.  myList.size < total) {
 
-            adapter.notifyDataSetChanged()
+            viewmodel.  myList.addAll(it.users)
+            filterData(binding.spinner.selectedItem.toString())
+
+        }
+
+
+
+
         })
 
         viewmodel.errorLiveData.observe(this, Observer {
@@ -116,41 +122,56 @@ var filteredList=ArrayList<Users>()
     }
 
     override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-        Log.d("222","~~~~~pos~~~"+spinnerList.get(p2))
-        if(spinnerList.get(p2).toString().contentEquals("Gender",true))
-            filterData(spinnerList.get(p2).toString())
+        Log.d("222","~~~~~pos~~~"+viewmodel.spinnerList.get(p2))
+//        if(spinnerList.get(p2).toString().contentEquals("Gender",true))
+            filterData(viewmodel.spinnerList.get(p2).toString())
     }
 
     private fun filterData(get: String) {
-        Log.d("222","~~get~~"+get)
+        Log.d("222","~~get~878~"+viewmodel.myList.size+"~~total~"+total)
 //        var myList_=ArrayList<Users>()
-        filteredList.clear()
+        if(filteredList.size < total) {
+            filteredList.clear()
+        }
         if(get.toString().contentEquals ("None",true)) {
-            filteredList.addAll(myList)
+            filteredList.addAll(viewmodel.myList)
 
         }else if(get.toString().contentEquals ("Gender",true)){
 
-        for( i in 0.. myList.size-1) {
+        for( i in 0.. viewmodel.myList.size-1) {
 
-            if (myList.get(i).gender.toString().equals("female"))
-                filteredList.add(myList.get(i))
+            if (viewmodel.myList.get(i).gender.toString().equals("female"))
+                filteredList.add(viewmodel.myList.get(i))
         } }else if(get.toString().contentEquals ("Name",true)) {
+            Log.d("222", "~~~localNameList~~99~~~~")
+
+            var localNameList = ArrayList<Users>()
+            localNameList.addAll(viewmodel.myList)
+
+            Log.d("222", "~~~localNameList~~~~~~")
+
+            Collections.sort(localNameList,
+                Comparator<Users?> { object1, object2 ->
+                    object1?.username!!.compareTo(object2!!.username+"")
+                })
+//                if (localNameList.get(i).username.toString().get(0).code > (localNameList.get(j).username.toString().get(0).code)){
+//                    var big=localNameList.get(i)
+//
+//                    localNameList.set(i,localNameList.get(j))
+//                    localNameList.set(j,big)
+//                    Log.d("222","~~~localNameList~~SET~~~~")
+//
+//                }                }
 
 
-            for( i in 0.. myList.size-1) {
-
-                if (myList.get(i).username.toString().equals("female"))
-                    filteredList.add(myList.get(i))
-            }
-
-
+            filteredList.addAll(localNameList)
         }
 
 
 //        adapter= UsersAdapter(filteredList)
 //        binding.rvUsers.adapter=adapter
         adapter.notifyDataSetChanged()
-        Log.d("222","~~myList_~~"+filteredList.size)
+        Log.d("222","~~myList_~~"+filteredList.size+"~~~"+viewmodel.myList.size)
 
 }
 

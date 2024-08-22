@@ -3,7 +3,9 @@ package com.pagertask.viewmodel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.pagertask.listener.ApiListener
+import com.pagertask.model.Users
 import com.pagertask.model.UsersResponse
+import com.pagertask.utils.SortBy
 import com.pagertask.view.UsersRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -17,7 +19,8 @@ class UserViewmodel @Inject constructor(private val usersRepository: UsersReposi
     var page=0
     var limit=30
     var skip=-30
-
+    var spinnerList= arrayListOf(SortBy.NONE, SortBy.GENDER, SortBy.NAME)
+    var myList=ArrayList<Users>()
 //https://dummyjson.com/users?limit=5&skip=10
     init {
 
