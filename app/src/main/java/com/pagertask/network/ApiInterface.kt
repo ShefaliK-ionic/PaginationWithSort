@@ -11,4 +11,8 @@ interface ApiInterface {
     @GET("users")
      fun getUsers(@QueryMap  queryMap: HashMap<String, Int>): Call<UsersResponse>
 
+    @GET("users")
+   suspend fun getUsersPaging(@QueryMap  queryMap: HashMap<String, Int>): UsersResponse
+
+
 }

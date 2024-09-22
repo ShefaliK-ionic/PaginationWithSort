@@ -59,7 +59,7 @@ dependencies {
     implementation("com.google.dagger:hilt-android:2.51.1")
     kapt("com.google.dagger:hilt-android-compiler:2.51.1")
     implementation ("com.github.bumptech.glide:glide:4.16.0")
-
+    implementation ("androidx.paging:paging-runtime:3.3.2")
 }
 
 kapt {

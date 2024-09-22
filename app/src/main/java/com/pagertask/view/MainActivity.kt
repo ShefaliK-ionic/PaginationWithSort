@@ -37,14 +37,53 @@ var filteredList=ArrayList<Users>()
         super.onCreate(savedInstanceState)
         binding=ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        viewmodel=ViewModelProvider(this).get(UserViewmodel::class.java)
-        setupSpinnerAdapter()
-        setupAdapter()
-        attachObserver()
-        scrollDataLoadMore()
+        sumFun()
+//        viewmodel=ViewModelProvider(this).get(UserViewmodel::class.java)
+//        setupSpinnerAdapter()
+//        setupAdapter()
+//        attachObserver()
+//        scrollDataLoadMore()
 //https://dummyjson.com/users?limit=5&skip=10
     }
-   lateinit var ad:ArrayAdapter<SortBy>
+
+    private fun sumFun() {
+        var list= arrayListOf(2,1,3)
+        for(i in 0..list.size-1){
+            for(k in i+1..list.size-1) {
+
+                if(list.get(i)>list.get(k)){
+                    var big=list.get(i)
+                    list.set(i,list.get(k))
+                    list.set(k,big)
+
+                }
+            }
+
+            if(list.size>2) {
+                var sumWithLow=0
+                for (i in 0..list.size - 2) {
+                     sumWithLow+=list.get(i)
+                }
+                Log.d("222","~~sumWithLow~"+sumWithLow)
+
+            }
+
+
+            if(list.size>2) {
+                var sumWithHigh=0
+                for (i in 1..list.size - 1) {
+                    sumWithHigh+=list.get(i)
+                }
+                Log.d("222","~~sumWithHigh~"+sumWithHigh)
+
+            }
+
+
+            Log.d("222","~~sum~"+Gson().toJson(list))
+            }
+    }
+
+    lateinit var ad:ArrayAdapter<SortBy>
     private fun setupSpinnerAdapter() {
        ad =  ArrayAdapter(
                 this,
